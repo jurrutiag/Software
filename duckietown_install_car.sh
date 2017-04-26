@@ -14,3 +14,7 @@ sudo apt-get install ros-indigo-imu-complementary-filter ros-indigo-imu-filter-m
 # # scipy for lane-filter
 # sudo apt-get install libblas-dev liblapack-dev libatlas-base-dev gfortran
 # sudo pip install scipy --upgrade
+
+# List of additional system pkgs
+#Install byobu
+sudo apt-get install byobu -y

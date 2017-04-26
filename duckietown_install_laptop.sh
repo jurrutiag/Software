@@ -1,12 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-
 #Install open-ssh and avahi
 sudo apt-get install openssh-server avahi-daemon avahi-discover avahi-utils -y
-
-#Install some GUI tools for git
-sudo apt-get install gitg kdiff3 -y
 
 #Install byobu
 sudo apt-get install byobu -y
@@ -24,4 +20,5 @@ sudo apt-get install ros-indigo-{tf-conversions,cv-bridge,image-transport,camera
 
 # List of additional system pkgs
 # sudo apt-get install libyaml-cpp-dev
-
+#Install some GUI tools for git
+#sudo apt-get install gitg kdiff3 -y

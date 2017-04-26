@@ -7,12 +7,11 @@ echo
 
 echo "Setting up PYTHONPATH."
 echo "Note: We assume you cloned the Software repository in the folder 'duckietown' at home"
-export PYTHONPATH=$HOME/duckietown/catkin_ws/src:$PYTHONPATH
+export PYTHONPATH=$DUCKIETOWN_ROOT/catkin_ws/src:$PYTHONPATH
 echo
 
-echo "Setup ROS_HOSTNAME."
-export ROS_HOSTNAME=$HOSTNAME.local
-export DUCKIETOWN_ROOT=$HOME/duckietown
+echo "Setup ROS_VARIABLES."
+source $DUCKIETOWN_ROOT/ros_variables.sh
 echo
 
 echo "Building machines file..."
