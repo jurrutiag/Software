@@ -1,80 +1,73 @@
 #!/usr/bin/env python
 
 import rospy
-from sensor_msgs.msg import Joy
-from duckietown_msgs.msg import  Twist2DStamped, BoolStamped
+import numpy as np
 import cv2
 
 from sensor_msgs.msg import Image
-from std_srvs.srv import Empty, EmptyResponse
 
 from cv_bridge import CvBridge, CvBridgeError
 
+lower_blue = np.array([110,50,50])
+upper_blue = np.array([130,255,255])
+lower_red = np.array([0,50,50])
+upper_red = np.array([25,255,255])
+lower_yellow = np.array([25,50,50])
+upper_yellow = np.array([50,255,255])
 
-class TakeImage():
+
+class SegmentImage():
 
     def __init__(self):
 
-        self.namespace_prefix = rospy.get_namespace()
-        self.image_service = rospy.Service(self.namespace_prefix+'take_image', Empty, self._take_image)
+        
+        #Subscribirce al topico "/duckiebot/camera_node/image/raw"
+        self.image_subscriber = rospy.Subscriber('/duckiebot/camera_node/image/raw', Image, self._process_image)
+        self.image_publisher = rospy.Publisher('/hola', Image, queue_size=1)
 
-        #subscribe image
-        self.image_subscriber = None 
-
+        #Clase necesaria para transformar el tipo de imagen
         self.bridge = CvBridge()
+
+        #Ultima imagen adquirida
         self.cv_image = Image()
         
-        self.cont = 0
 
-        self.image_subscriber = rospy.Subscriber("/duckiebot/camera_node/image/raw", Image, self._process_image)
-
-
+    
     def _process_image(self,img):
+        
+        #Se cambiar mensage tipo ros a imagen opencv
         try:
             self.cv_image = self.bridge.imgmsg_to_cv2(img, "bgr8")
         except CvBridgeError as e:
             print(e)
 
-        # cv2.imshow("Image window", self.cv_image)
-        # cv2.waitKey(3)
+        #Se deja en frame la imagen actual
+        frame = self.cv_image
 
+        #Cambiar tipo de color de BGR a HSV
+        image_out = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
 
+        # Filtrar colores de la imagen en el rango utilizando 
+        mask = cv2.inRange(image_out, lower_yellow, upper_yellow)
 
-    def _take_image(self, req):
-        print "master"
-        rgbimage = self.cv_image
-        cv2.imwrite("image_"+str(self.cont)+".png",rgbimage)
+        # Bitwise-AND mask and original image
+        segment_image = cv2.bitwise_and(frame,frame, mask= mask)
+        final_image = self.bridge.cv2_to_imgmsg(segment_image,"bgr8")
 
-        self.cont += 1
-        print "buena"
-        return EmptyResponse()
+        #Publicar imagenes
+        
+        
+        self.image_publisher.publish(final_image)
+
 
 
 def main():
-    global base_pub
-    global sub
-    global msg
-    rospy.init_node('TakeImage')
-    rospy.loginfo('test_publisher')
-    base_pub = rospy.Publisher('/duckiebot/wheels_driver_node/car_cmd', Twist2DStamped, queue_size=1)
-    sub = rospy.Subscriber('/duckiebot/joy', Joy, process_callback)
-    msg = Twist2DStamped()
-    rospy.spin()
 
-def process_callback(msg1):
-    rospy.loginfo(msg1)
-    rospy.loginfo(msg1.axes[0])
-    msg.header.stamp = rospy.get_rostime()
-    lados = msg1.axes[0]
-    vertical = msg1.axes[1]
-    msg.omega = lados*2
-    if(msg1.buttons[0]==1):
-        
-       TakeImage()
-    msg.v = vertical
-    base_pub.publish(msg)
+    rospy.init_node('SegmentImage')
+
+    SegmentImage()
+
+    rospy.spin()
 
 if __name__ == '__main__':
     main()
-
-

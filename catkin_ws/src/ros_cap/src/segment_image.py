@@ -12,8 +12,13 @@ lower_blue = np.array([110,50,50])
 upper_blue = np.array([130,255,255])
 lower_red = np.array([0,0,0])
 upper_red = np.array([0,0,0])
+<<<<<<< Updated upstream
 lower_yellow = np.array([0,0,0])
 upper_yellow = np.array([0,0,0])
+=======
+lower_yellow = np.array([35,0,50])
+upper_yellow = np.array([50,0,255])
+>>>>>>> Stashed changes
 
 
 class SegmentImage():
@@ -22,7 +27,7 @@ class SegmentImage():
 
 
         #Subscribirce al topico "/duckiebot/camera_node/image/raw"
-        self.image_subscriber = None 
+        self.image_subscriber = rospy.Subscriber("/duckiebot/camera_node/image/raw", Image, self._process_image)
 
         #Clase necesaria para transformar el tipo de imagen
         self.bridge = CvBridge()
@@ -45,13 +50,16 @@ class SegmentImage():
 
         #Cambiar tipo de color de BGR a HSV
 
-        # Filtrar colores de la imagen en el rango utilizando 
+        image_out = cv2.cvtColor(frame,cv2.COLOR_BGR2HSV)
+        # Filtrar colores de la imagen en el rango utilizando
+        mask = cv2.inRange(image_out,lower_yellow,upper_yellow) 
         #mask = cv2.inRange(image, lower_limit, upper_limit)
-
+        
         # Bitwise-AND mask and original image
         segment_image = cv2.bitwise_and(frame,frame, mask= mask)
-
+        imagen_final = cv2.cvtColor(segment_image,cv2.CV_BGR2GRAY)
         #Publicar imagenes
+        
 
 
 

@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 import rospy
 # import rospkg
 import cv2
