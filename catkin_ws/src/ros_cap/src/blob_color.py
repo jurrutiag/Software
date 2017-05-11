@@ -8,6 +8,7 @@ import cv2
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import Point
 from std_srvs.srv import Empty, EmptyResponse
+from duckietown_msgs.msg import  Twist2DStamped, BoolStamped
 
 from cv_bridge import CvBridge, CvBridgeError
 
@@ -33,6 +34,8 @@ class BlobColor():
         self.image_publisher = rospy.Publisher('/hola', Image, queue_size=1)
         self.point_publisher = rospy.Publisher('/Point', Point, queue_size=1)
         self.mask_publisher = rospy.Publisher('/mask', Image, queue_size=1)
+        self.motor_publisher = rospy.Publisher('/duckiebot/wheels_driver_node/car_cmd', Twist2DStamped, queue_size=1)
+        self.msg = Twist2DStamped()
 
         #Clase necesaria para transformar el tipo de imagen
         self.bridge = CvBridge()
@@ -120,6 +123,15 @@ class BlobColor():
         mask2 = cv2.cvtColor(img_out_final,cv2.COLOR_GRAY2BGR)
         frame2 = self.bridge.cv2_to_imgmsg(frame, "bgr8")
         imagenPrueba = self.bridge.cv2_to_imgmsg(mask2, "bgr8")
+
+        if(P.x>325):
+             self.msg.omega = 1
+        elif(P.x<320 and P.x>0):
+             self.msg.omega = -1
+        else:
+             self.msg.omega = 0 
+        print self.msg.omega
+        self.motor_publisher.publish(self.msg)
         #self.mask_publisher.publish(imagenPrueba)
         self.image_publisher.publish(frame2)
         self.point_publisher.publish(P)
