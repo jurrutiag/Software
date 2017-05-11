@@ -22,7 +22,7 @@ class SegmentImage():
 
         
         #Subscribirce al topico "/duckiebot/camera_node/image/raw"
-        self.image_subscriber = rospy.Subscriber('/duckiebot/camera_node/image/raw', Image, self._process_image)
+        self.image_subscriber = rospy.Subscriber('/usb_cam/image_raw', Image, self._process_image)
         self.image_publisher = rospy.Publisher('/hola', Image, queue_size=1)
 
         #Clase necesaria para transformar el tipo de imagen
