@@ -10,7 +10,7 @@ def main():
     global msg
     rospy.init_node('test_publisher')
     rospy.loginfo('test_publisher')
-    base_pub = rospy.Publisher('/duckiebot/wheels_driver_node/car_cmd', Twist2DStamped, queue_size=1)
+    possible_pub = rospy.Publisher('duckiebot/possible_cmd',Twist2DStamped,queue_size=1)
     sub = rospy.Subscriber('/duckiebot/joy', Joy, process_callback)
     msg = Twist2DStamped()
     rospy.spin()
@@ -23,11 +23,8 @@ def process_callback(msg1):
     vertical = msg1.axes[1]
     msg.omega = lados*2
     msg.v = vertical
-    base_pub.publish(msg)
     possible_pub.publish(msg)
 
 if __name__ == '__main__':
     main()
-
-
 
