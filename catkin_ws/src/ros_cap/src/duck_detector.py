@@ -19,7 +19,7 @@ lower_blue = np.array([110,50,50])
 upper_blue = np.array([130,255,255])
 lower_red = np.array([0,50,50])
 upper_red = np.array([25,255,255])
-lower_yellow = np.array([20,90,70])
+lower_yellow = np.array([25,120,150])
 upper_yellow = np.array([35,255,255])
 K = [341.24860679341685, 0.0, 310.6817834541092, 0.0, 346.0601043618262, 229.7316183644609,
     0.0, 0.0, 1.0]
@@ -44,7 +44,8 @@ class BlobColor():
         #Ultima imagen adquirida
         self.cv_image = Image()
 
-        self.min_area = 10
+        self.min_area = 200
+        self.max_area = 500
 
 
 
