@@ -31,7 +31,7 @@ class BlobColor():
 
 
         #Subscribirce al topico "/duckiebot/camera_node/image/raw"
-        self.image_subscriber = rospy.Subscriber('/duckiebot/camera_node/image/raw', Image, self._process_image)
+        self.image_subscriber = rospy.Subscriber('/usb_cam/image_raw', Image, self._process_image)
         self.image_publisher = rospy.Publisher('/hola', Image, queue_size=1)
         self.point_publisher = rospy.Publisher('/Point', Point, queue_size=1)
         self.mask_publisher = rospy.Publisher('/mask', Image, queue_size=1)
@@ -69,16 +69,16 @@ class BlobColor():
         segment_image = cv2.bitwise_and(frame,frame, mask= mask)
         final_image = self.bridge.cv2_to_imgmsg(segment_image,"bgr8")
         
-
+        
 
         kernel = np.ones((5,5),np.uint8)
 
         #Operacion morfologica erode
-        img_out = cv2.erode(mask, kernel, iterations = 3)
+        img_out = cv2.erode(mask, kernel, iterations = 2)
         
         #Operacion morfologica dilate
         img_out_final = cv2.dilate(img_out, kernel, iterations = 1)
-
+        
         image, contours, hierarchy = cv2.findContours(img_out_final,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
         
         #vectorX = []
@@ -120,24 +120,27 @@ class BlobColor():
         P = Point()
         P.x = xPoint + wPoint/2
         P.y = yPoint + hPoint/2
-        P.z = (K[4]*3)/wPoint
+        if wPoint != 0:
+            P.z = (K[4]*3)/wPoint
         #Publicar frame
 #640X480bgr
         mask2 = cv2.cvtColor(img_out_final,cv2.COLOR_GRAY2BGR)
         frame2 = self.bridge.cv2_to_imgmsg(frame, "bgr8")
         imagenPrueba = self.bridge.cv2_to_imgmsg(mask2, "bgr8")
 
-        if(P.x>325):
-             self.msg.omega = -(P.x-325)*0.1
-        elif(P.x<320 and P.x>0):
-             self.msg.omega = (325-P.x)*0.1
-        else:
-             self.msg.omega = 0 
-        print self.msg.omega
-        self.motor_publisher.publish(self.msg)
-        #self.mask_publisher.publish(imagenPrueba)
+        #motor:
+        #if(P.x>325):
+        #     self.msg.omega = -(P.x-325)*0.1
+        #elif(P.x<320 and P.x>0):
+        #     self.msg.omega = (325-P.x)*0.1
+        #else:
+        #     self.msg.omega = 0 
+        #self.motor_publisher.publish(self.msg)
+
+        self.mask_publisher.publish(imagenPrueba)
         self.image_publisher.publish(frame2)
         self.point_publisher.publish(P)
+        
 
         #Publicar Point center de mayor tamanio
 
