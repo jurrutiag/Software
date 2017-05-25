@@ -5,35 +5,42 @@ import rospy
 from sensor_msgs.msg import Joy
 from duckietown_msgs.msg import  Twist2DStamped, BoolStamped
 
-def main():
-    global base_pub
-    global sub
-    global msg
-    global possible_pub
-    rospy.init_node('test_publisher')
-    rospy.loginfo('test_publisher')
-    possible_pub = rospy.Publisher('duckiebot/possible_cmd',Twist2DStamped,queue_size=1)
-    sub = rospy.Subscriber('/duckiebot/joy', Joy, process_callback)
-    global msgMotor
-    msgMotor = Twist2DStamped()
-
-    subExtra = rospy.Subscriber('/usb_cam/image_raw', Image, process_callback2)
-    rospy.spin()
+class joy_control():
     
+    def __init__(self):
+        
+        self.possible_pub = rospy.Publisher('duckiebot/possible_cmd',Twist2DStamped,queue_size=1)
+        self.joy_sub = rospy.Subscriber('/duckiebot/joy', Joy, self.process_callback)
+        self.msgMotor = Twist2DStamped()
+        
+        #prueba sin joystick, usando camara
+        #self.subExtra = rospy.Subscriber('/usb_cam/image_raw', Image, self.process_callback2)
+        
+    def process_callback(self,msg):
+        lr = msg.axes[0]
+        bwd = msg.axes[2] #presionando el boton de presion izquierdo
+        fwd = msg.axes[5] #presionando el boton de presion derecho
+        if bwd == 1:
+            self.msgMotor.v = abs(fwd-1)*3
+        elif fwd == 1:
+            self.msgMotor.v = (bwd-1)*3
+        else:
+            self.msgMotor.v = 0
+        self.msgMotor.omega = lr*3
+        
+        possible_pub.publish(self.msgMotor)
+        
+    #eliminar luego de tener el robot    
+    #def process_callback2(self,Imagen):
+    #   self.msgMotor.v = 5
+    #   self.possible_pub.publish(self.msgMotor)
 
-def process_callback(msg1):
-    rospy.loginfo(msg1)
-    rospy.loginfo(msg1.axes[0])
-    msgMotor.header.stamp = rospy.get_rostime()
-    lados = msg1.axes[0]
-    vertical = msg1.axes[1]
-    msgMotor.omega = lados*2
-    msgMotor.v = vertical
-    possible_pub.publish(msgMotor)
 
-def process_callback2(Imagen):
-    msgMotor.v = 5
-    possible_pub.publish(msgMotor)
+
+def main():
+    rospy.init_node('joy_control')
+    joy_control()
+    rospy.spin()
 
 if __name__ == '__main__':
     main()
