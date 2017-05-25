@@ -19,19 +19,19 @@ lower_blue = np.array([110,50,50])
 upper_blue = np.array([130,255,255])
 lower_red = np.array([0,50,50])
 upper_red = np.array([25,255,255])
-lower_yellow = np.array([25,120,120])
+lower_yellow = np.array([25,120,150])
 upper_yellow = np.array([35,255,255])
 K = [341.24860679341685, 0.0, 310.6817834541092, 0.0, 346.0601043618262, 229.7316183644609,
     0.0, 0.0, 1.0]
 
 
-class duck_detector():
+class BlobColor():
 
     def __init__(self):
 
 
         #Subscribirce al topico "/duckiebot/camera_node/image/raw"
-        self.image_subscriber = rospy.Subscriber('/duckiebot/camera_node/image/raw', Image, self._process_image)
+        self.image_subscriber = rospy.Subscriber('/usb_cam/image_raw', Image, self._process_image)
         self.image_publisher = rospy.Publisher('/hola', Image, queue_size=1)
         self.point_publisher = rospy.Publisher('/Point', Point, queue_size=1)
         self.mask_publisher = rospy.Publisher('/mask', Image, queue_size=1)
@@ -44,7 +44,7 @@ class duck_detector():
         #Ultima imagen adquirida
         self.cv_image = Image()
 
-        self.min_area = 100
+        self.min_area = 200
         self.max_area = 500
 
 
@@ -146,9 +146,9 @@ class duck_detector():
 
 def main():
 
-    rospy.init_node('duck_detector')
+    rospy.init_node('BlobColor')
 
-    duck_detector()
+    BlobColor()
 
     rospy.spin()
 
