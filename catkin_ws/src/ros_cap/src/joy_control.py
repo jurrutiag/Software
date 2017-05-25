@@ -12,12 +12,14 @@ def main():
     global possible_pub
     rospy.init_node('test_publisher')
     rospy.loginfo('test_publisher')
-    possible_pub = rospy.Publisher('duckiebot/possible_cmd',Twist2DStamped,queue_size=1)
+    #duckiebot/possible_cmd
+    #duckiebot/wheels_driver_node/car_cmd
+    possible_pub = rospy.Publisher('duckiebot/possible_cmd/',Twist2DStamped,queue_size=1)
     sub = rospy.Subscriber('/duckiebot/joy', Joy, process_callback)
     global msgMotor
     msgMotor = Twist2DStamped()
 
-    subExtra = rospy.Subscriber('/usb_cam/image_raw', Image, process_callback2)
+    #subExtra = rospy.Subscriber('/usb_cam/image_raw', Image, process_callback2)
     rospy.spin()
     
 
@@ -25,15 +27,15 @@ def process_callback(msg1):
     rospy.loginfo(msg1)
     rospy.loginfo(msg1.axes[0])
     msgMotor.header.stamp = rospy.get_rostime()
-    lados = msg1.axes[0]
     vertical = msg1.axes[1]
+    lados = msg1.axes[2]
     msgMotor.omega = lados*2
     msgMotor.v = vertical
     possible_pub.publish(msgMotor)
 
-def process_callback2(Imagen):
-    msgMotor.v = 5
-    possible_pub.publish(msgMotor)
+#def process_callback2(Imagen):
+ #   msgMotor.v = 5
+  #  possible_pub.publish(msgMotor)
 
 if __name__ == '__main__':
     main()

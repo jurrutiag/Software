@@ -28,10 +28,11 @@ def process_callback(msg1):
     else:
         wheels_pub.publish(motorStopped)
         print(motorStopped)
+        
 
 def point_callback(point):
     Z = point.z
-    
+    print Z
     
 
 if __name__ == '__main__':
