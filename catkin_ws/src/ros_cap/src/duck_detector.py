@@ -31,6 +31,7 @@ class duck_detector():
 
 
         #Subscribirce al topico "/duckiebot/camera_node/image/raw"
+        #usb: /usb_cam/image_raw
         self.image_subscriber = rospy.Subscriber('/duckiebot/camera_node/image/raw', Image, self._process_image)
         self.image_publisher = rospy.Publisher('/hola', Image, queue_size=1)
         self.point_publisher = rospy.Publisher('/Point', Point, queue_size=1)
@@ -123,7 +124,7 @@ class duck_detector():
         if wPoint != 0:
             P.z = (K[4]*3)/wPoint
         #Publicar frame
-#640X480bgr
+        #640X480bgr
         mask2 = cv2.cvtColor(img_out_final,cv2.COLOR_GRAY2BGR)
         frame2 = self.bridge.cv2_to_imgmsg(frame, "bgr8")
         imagenPrueba = self.bridge.cv2_to_imgmsg(mask2, "bgr8")

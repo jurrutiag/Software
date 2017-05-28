@@ -31,9 +31,9 @@ class joy_control():
         possible_pub.publish(self.msgMotor)
         
     #eliminar luego de tener el robot    
-    #def process_callback2(self,Imagen):
-    #   self.msgMotor.v = 5
-    #   self.possible_pub.publish(self.msgMotor)
+#    def process_callback2(self,Imagen):
+#        self.msgMotor.v = 5
+#        self.possible_pub.publish(self.msgMotor)
 
 
 
