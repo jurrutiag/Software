@@ -32,19 +32,19 @@ class Controller():
               self.motor_pub.publish(self.motorEvasion)
               self.motorEvasion.omega = -10
               self.motor_pub.publish(self.motorEvasion)
-              time.sleep(.5)
+              time.sleep(.4)
               self.motorEvasion.omega = 0
               self.motorEvasion.v = 2
               self.motor_pub.publish(self.motorEvasion)
-              time.sleep(.5)
+              time.sleep(.3)
               self.motorEvasion.v = 0
-              self.motorEvasion.omega = 8
+              self.motorEvasion.omega = 10
               self.motor_pub.publish(self.motorEvasion)
-              time.sleep(.5)
+              time.sleep(.4)
               self.motorEvasion.omega = 0
               self.motorEvasion.v = 2
               self.motor_pub.publish(self.motorEvasion)
-              time.sleep(.5)
+              time.sleep(.3)
          
               #esto es para que se detenga
               #self.motor_pub.publish(self.motorStopped)
