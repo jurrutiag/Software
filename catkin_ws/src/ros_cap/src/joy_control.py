@@ -21,14 +21,14 @@ class joy_control():
         bwd = msg.axes[2] #presionando el boton de presion izquierdo
         fwd = msg.axes[5] #presionando el boton de presion derecho
         if bwd == 1:
-            self.msgMotor.v = abs(fwd-1)*3
+            self.msgMotor.v = abs(fwd-1)
         elif fwd == 1:
-            self.msgMotor.v = (bwd-1)*3
+            self.msgMotor.v = (bwd-1)
         else:
             self.msgMotor.v = 0
-        self.msgMotor.omega = lr*3
-        
-        possible_pub.publish(self.msgMotor)
+        self.msgMotor.omega = lr*10
+        print(self.msgMotor)
+        self.possible_pub.publish(self.msgMotor)
         
     #eliminar luego de tener el robot    
 #    def process_callback2(self,Imagen):

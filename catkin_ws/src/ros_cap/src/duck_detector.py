@@ -19,9 +19,9 @@ lower_blue = np.array([110,50,50])
 upper_blue = np.array([130,255,255])
 lower_red = np.array([0,50,50])
 upper_red = np.array([25,255,255])
-lower_yellow = np.array([25,120,120])
+lower_yellow = np.array([25,110,110])
 upper_yellow = np.array([35,255,255])
-K = [341.24860679341685, 0.0, 310.6817834541092, 0.0, 346.0601043618262, 229.7316183644609,
+K = [161.00136645349775, 0.0, 155.14791540766444, 0.0, 163.35925237678256, 114.07510929111926,
     0.0, 0.0, 1.0]
 
 
@@ -45,7 +45,7 @@ class duck_detector():
         #Ultima imagen adquirida
         self.cv_image = Image()
 
-        self.min_area = 100
+        self.min_area = 70
         self.max_area = 500
 
 
@@ -75,10 +75,10 @@ class duck_detector():
         kernel = np.ones((5,5),np.uint8)
 
         #Operacion morfologica erode
-        img_out = cv2.erode(mask, kernel, iterations = 2)
+        img_out = cv2.erode(mask, kernel, iterations = 1)
         
         #Operacion morfologica dilate
-        img_out_final = cv2.dilate(img_out, kernel, iterations = 1)
+        img_out_final = cv2.dilate(img_out, kernel, iterations = 2)
         
         image, contours, hierarchy = cv2.findContours(img_out_final,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
         

@@ -22,28 +22,32 @@ class Controller():
          
     def process_callback(self,motor):
          
-         if self.Z > 10 or self.Z == 0:
+         if self.Z > 13 or self.Z == 0:
               self.motor_pub.publish(motor)
               print('ok')
 
          else:
-#              self.motorEvasion.omega = 3
-#              self.motor_pub.publish(self.motorEvasion)
-#              time.sleep(.5)
-#              self.motorEvasion.omega = 0
-#              self.motorEvasion.v = 3
-#              self.motor_pub.publish(self.motorEvasion)
-#              time.sleep(.5)
-#              self.motorEvasion.omega = -3
-#              self.motor_pub.publish(self.motorEvasion)
-#              time.sleep(.5)
-#              self.motorEvasion.omega = 0
-#              self.motorEvasion.v = 3
-#              self.motor_pub.publish(self.motorEvasion)
-#              time.sleep(.5)
+              self.motorEvasion.omega = 0
+              self.motorEvasion.v = 0
+              self.motor_pub.publish(self.motorEvasion)
+              self.motorEvasion.omega = -10
+              self.motor_pub.publish(self.motorEvasion)
+              time.sleep(.5)
+              self.motorEvasion.omega = 0
+              self.motorEvasion.v = 2
+              self.motor_pub.publish(self.motorEvasion)
+              time.sleep(.5)
+              self.motorEvasion.v = 0
+              self.motorEvasion.omega = 8
+              self.motor_pub.publish(self.motorEvasion)
+              time.sleep(.5)
+              self.motorEvasion.omega = 0
+              self.motorEvasion.v = 2
+              self.motor_pub.publish(self.motorEvasion)
+              time.sleep(.5)
          
-              esto es para que se detenga
-              self.motor_pub.publish(self.motorStopped)
+              #esto es para que se detenga
+              #self.motor_pub.publish(self.motorStopped)
               print('not ok')
          
          
