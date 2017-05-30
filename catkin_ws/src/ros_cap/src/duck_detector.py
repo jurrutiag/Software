@@ -19,19 +19,20 @@ lower_blue = np.array([110,50,50])
 upper_blue = np.array([130,255,255])
 lower_red = np.array([0,50,50])
 upper_red = np.array([25,255,255])
-lower_yellow = np.array([25,120,150])
+lower_yellow = np.array([25,120,120])
 upper_yellow = np.array([35,255,255])
 K = [341.24860679341685, 0.0, 310.6817834541092, 0.0, 346.0601043618262, 229.7316183644609,
     0.0, 0.0, 1.0]
 
 
-class BlobColor():
+class duck_detector():
 
     def __init__(self):
 
 
         #Subscribirce al topico "/duckiebot/camera_node/image/raw"
-        self.image_subscriber = rospy.Subscriber('/usb_cam/image_raw', Image, self._process_image)
+        #usb: /usb_cam/image_raw
+        self.image_subscriber = rospy.Subscriber('/duckiebot/camera_node/image/raw', Image, self._process_image)
         self.image_publisher = rospy.Publisher('/hola', Image, queue_size=1)
         self.point_publisher = rospy.Publisher('/Point', Point, queue_size=1)
         self.mask_publisher = rospy.Publisher('/mask', Image, queue_size=1)
@@ -44,7 +45,7 @@ class BlobColor():
         #Ultima imagen adquirida
         self.cv_image = Image()
 
-        self.min_area = 200
+        self.min_area = 100
         self.max_area = 500
 
 
@@ -123,7 +124,7 @@ class BlobColor():
         if wPoint != 0:
             P.z = (K[4]*3)/wPoint
         #Publicar frame
-#640X480bgr
+        #640X480bgr
         mask2 = cv2.cvtColor(img_out_final,cv2.COLOR_GRAY2BGR)
         frame2 = self.bridge.cv2_to_imgmsg(frame, "bgr8")
         imagenPrueba = self.bridge.cv2_to_imgmsg(mask2, "bgr8")
@@ -146,9 +147,9 @@ class BlobColor():
 
 def main():
 
-    rospy.init_node('BlobColor')
+    rospy.init_node('duck_detector')
 
-    BlobColor()
+    duck_detector()
 
     rospy.spin()
 
