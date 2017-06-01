@@ -19,7 +19,7 @@ lower_blue = np.array([110,50,50])
 upper_blue = np.array([130,255,255])
 lower_red = np.array([0,50,50])
 upper_red = np.array([25,255,255])
-lower_yellow = np.array([25,110,110])
+lower_yellow = np.array([25,120,120])
 upper_yellow = np.array([35,255,255])
 K = [161.00136645349775, 0.0, 155.14791540766444, 0.0, 163.35925237678256, 114.07510929111926,
     0.0, 0.0, 1.0]

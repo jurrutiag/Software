@@ -26,7 +26,7 @@ class joy_control():
             self.msgMotor.v = (bwd-1)
         else:
             self.msgMotor.v = 0
-        self.msgMotor.omega = lr*10
+        self.msgMotor.omega = lr*13
         print(self.msgMotor)
         self.possible_pub.publish(self.msgMotor)
         

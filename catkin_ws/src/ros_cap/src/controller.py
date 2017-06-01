@@ -22,7 +22,7 @@ class Controller():
          
     def process_callback(self,motor):
          
-         if self.Z > 13 or self.Z == 0:
+         if self.Z > 10 or self.Z == 0:
               self.motor_pub.publish(motor)
               print('ok')
 
@@ -30,19 +30,19 @@ class Controller():
               self.motorEvasion.omega = 0
               self.motorEvasion.v = 0
               self.motor_pub.publish(self.motorEvasion)
-              self.motorEvasion.omega = -10
+              self.motorEvasion.omega = -13
               self.motor_pub.publish(self.motorEvasion)
-              time.sleep(.4)
+              time.sleep(.3)
               self.motorEvasion.omega = 0
-              self.motorEvasion.v = 2
+              self.motorEvasion.v = 3
               self.motor_pub.publish(self.motorEvasion)
               time.sleep(.3)
               self.motorEvasion.v = 0
-              self.motorEvasion.omega = 10
+              self.motorEvasion.omega = 13
               self.motor_pub.publish(self.motorEvasion)
-              time.sleep(.4)
+              time.sleep(.2)
               self.motorEvasion.omega = 0
-              self.motorEvasion.v = 2
+              self.motorEvasion.v = 3
               self.motor_pub.publish(self.motorEvasion)
               time.sleep(.3)
          
