@@ -32,7 +32,7 @@ class duck_detector():
 
         #Subscribirce al topico "/duckiebot/camera_node/image/raw"
         #usb: /usb_cam/image_raw
-        self.image_subscriber = rospy.Subscriber('/duckiebot/camera_node/image/raw', Image, self._process_image)
+        self.image_subscriber = rospy.Subscriber('/duckiebot/camera_node/image/rect', Image, self._process_image)
         self.image_publisher = rospy.Publisher('/hola', Image, queue_size=1)
         self.point_publisher = rospy.Publisher('/Point', Point, queue_size=1)
         self.mask_publisher = rospy.Publisher('/mask', Image, queue_size=1)

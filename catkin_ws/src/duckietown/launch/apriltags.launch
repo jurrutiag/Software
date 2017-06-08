@@ -36,4 +36,14 @@
         <arg name="config" value="$(arg config)"/>
         <arg name="param_file_name" value="$(arg param_file_name)"/>
  	</include>
+    
+    <node ns="$(arg veh)" pkg="ros_cap" type="duck_detector.py" name="duck_detector">
+    </node>
+
+    <node ns="$(arg veh)" pkg="ros_cap" type="controller.py" name="controller">
+    </node>
+   
+    <node ns="$(arg veh)" pkg="ros_cap" type="joy_control.py" name="joy_control">
+    </node>
+
 </launch>
