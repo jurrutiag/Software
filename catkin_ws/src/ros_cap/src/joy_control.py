@@ -9,7 +9,8 @@ class joy_control():
     
     def __init__(self):
         
-        self.possible_pub = rospy.Publisher('duckiebot/possible_cmd',Twist2DStamped,queue_size=1)
+        #self.possible_pub = rospy.Publisher('duckiebot/possible_cmd',Twist2DStamped,queue_size=1)
+        self.normal_pub = rospy.Publisher('/duckiebot/wheels_driver_node/car_cmd',Twist2DStamped,queue_size=1)
         self.joy_sub = rospy.Subscriber('/duckiebot/joy', Joy, self.process_callback)
         self.msgMotor = Twist2DStamped()
         
@@ -28,8 +29,8 @@ class joy_control():
             self.msgMotor.v = 0
         self.msgMotor.omega = lr*13
         print(self.msgMotor)
-        self.possible_pub.publish(self.msgMotor)
-        
+        #self.possible_pub.publish(self.msgMotor)
+        self.normal_pub.publish(self.msgMotor)
     #eliminar luego de tener el robot    
 #    def process_callback2(self,Imagen):
 #        self.msgMotor.v = 5
