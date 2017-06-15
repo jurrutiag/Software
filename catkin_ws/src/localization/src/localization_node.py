@@ -9,6 +9,7 @@ from geometry_msgs.msg import Transform, TransformStamped
 import numpy as np
 from localization import PoseAverage
 from visualization_msgs.msg import Marker
+import time
 
 # Localization Node
 # Author: Teddy Ort
@@ -29,6 +30,7 @@ class LocalizationNode(object):
 
         # Setup the publishers and subscribers
         self.sub_april = rospy.Subscriber("~apriltags", AprilTagsWithInfos, self.tag_callback)
+        self.sub_motor = rospy-Subscriber('/duckiebot/wheels_driver_node/car_cmd',Twist2DStamped,self.motor_callback)
         self.pub_tf = rospy.Publisher("/tf", TFMessage, queue_size=1, latch=True)
         self.pub_rviz = rospy.Publisher("/sign_highlights", Marker, queue_size=1, latch=True)
 
@@ -39,6 +41,12 @@ class LocalizationNode(object):
         # Use a timer to make the duckiebot disappear
         self.lifetimer = rospy.Time.now()
         self.publish_duckie_marker()
+
+        self.time0
+        self.time1
+        self.timeDif
+        self.motorAnterior
+        self.counter = 0
 
         rospy.loginfo("[%s] has started", self.node_name)
 
@@ -134,6 +142,19 @@ class LocalizationNode(object):
         rospy.set_param(param_name, value)  #Write to parameter server for transparancy
         rospy.loginfo("[%s] %s = %s " % (self.node_name, param_name, value))
         return value
+    
+    def motor_callback(motor):
+        if self.counter == 0:
+            self.time0 = time.time()
+            self.counter = 1
+            self.motorAnterior = motor
+        elif self.counter == 1:
+            self.time1 = time.time()
+            self.timeDif = self.time1-self.time0
+            self.counter = 0
+            dist = self.motorAnterior.v*self.timeDif
+
+        
 
 
 if __name__ == '__main__':

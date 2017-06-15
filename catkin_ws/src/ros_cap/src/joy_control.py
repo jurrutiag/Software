@@ -21,12 +21,13 @@ class joy_control():
         lr = msg.axes[0]
         bwd = msg.axes[2] #presionando el boton de presion izquierdo
         fwd = msg.axes[5] #presionando el boton de presion derecho
-        if bwd == 1:
-            self.msgMotor.v = abs(fwd-1)
-        elif fwd == 1:
-            self.msgMotor.v = (bwd-1)
-        else:
-            self.msgMotor.v = 0
+        #if bwd == 1:
+        #    self.msgMotor.v = abs(fwd-1)
+        #elif fwd == 1:
+        #    self.msgMotor.v = (bwd-1)
+        #else:
+        #    self.msgMotor.v = 0
+        self.msgMotor.v = abs(fwd-1) + (bwd-1)
         self.msgMotor.omega = lr*13
         print(self.msgMotor)
         #self.possible_pub.publish(self.msgMotor)
