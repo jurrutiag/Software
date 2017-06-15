@@ -10,6 +10,7 @@ import numpy as np
 from localization import PoseAverage
 from visualization_msgs.msg import Marker
 import time
+import math
 
 # Localization Node
 # Author: Teddy Ort
@@ -47,6 +48,9 @@ class LocalizationNode(object):
         self.timeDif
         self.motorAnterior
         self.counter = 0
+        self.omega
+        self.x
+        self.y
 
         rospy.loginfo("[%s] has started", self.node_name)
 
@@ -83,6 +87,9 @@ class LocalizationNode(object):
             T.header.frame_id = self.world_frame
             T.header.stamp = rospy.Time.now()
             T.child_frame_id = self.duckiebot_frame
+            self.x = Tr_w.translation.x
+            self.y = Tr_w.translation.y
+            self.omega = rotz
             self.pub_tf.publish(TFMessage([T]))
             self.lifetimer = rospy.Time.now()
 
@@ -143,7 +150,7 @@ class LocalizationNode(object):
         rospy.loginfo("[%s] %s = %s " % (self.node_name, param_name, value))
         return value
     
-    def motor_callback(motor):
+    def motor_callback(self,motor):
         if self.counter == 0:
             self.time0 = time.time()
             self.counter = 1
@@ -152,7 +159,25 @@ class LocalizationNode(object):
             self.time1 = time.time()
             self.timeDif = self.time1-self.time0
             self.counter = 0
-            dist = self.motorAnterior.v*self.timeDif
+            deltadist = self.motorAnterior.v*self.timeDif
+            deltaomega = self.motorAnterior.omega*self.timeDif
+            self.omega = self.omega+deltaomega
+            self.x = self.x + deltadist*math.cos(self.omega)
+            
+            transformAprox = Transform()
+            transformAprox.translation.x = self.x
+            transformAprox.translation.y = self.y
+            transformAprox.translation.z = 0
+            (transformAprox.rotation.x,transformAprox.rotation.y,transformAprox.rotation.z,transformAprox.rotation.w) = tr.quaternion_from_euler(0,0,self.omega)
+            T2 = TransformStamped()
+            T2.transform = transformAprox
+            T2.header.frame_id = self.world_frame
+            T2.header.stamp = rospy.Time.now()
+            T2.child_frame_id = self.duckiebot_frame
+            
+            
+            self.pub_tf.publish(TFMessage([T2]))
+            
 
         
 
