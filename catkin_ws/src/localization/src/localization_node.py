@@ -11,6 +11,7 @@ from localization import PoseAverage
 from visualization_msgs.msg import Marker
 import time
 import math
+from duckietown_msgs.msg import  Twist2DStamped, BoolStamped
 
 # Localization Node
 # Author: Teddy Ort
@@ -25,13 +26,23 @@ class LocalizationNode(object):
         # Constants
         self.world_frame = "world"
         self.duckiebot_frame = "duckiebot"
+        self.time0 = time.time()
+        self.time1 = time.time()
+        self.timeDif = 0
+        self.motorAnterior = Twist2DStamped()
+        self.counter = 0
+        self.omega = 0
+        self.x = 0
+        self.y = 0
+        self.last_world_frame = "world"
+        self.last_duckiebot_frame = "duckiebot"
 
         self.duckiebot_lifetime = self.setupParam("~duckiebot_lifetime", 5) # The number of seconds to keep the duckiebot alive bewtween detections
         self.highlight_lifetime = self.setupParam("~highlight_lifetime", 3) # The number of seconds to keep a sign highlighted after a detection
 
         # Setup the publishers and subscribers
         self.sub_april = rospy.Subscriber("~apriltags", AprilTagsWithInfos, self.tag_callback)
-        self.sub_motor = rospy-Subscriber('/duckiebot/wheels_driver_node/car_cmd',Twist2DStamped,self.motor_callback)
+        self.sub_motor = rospy.Subscriber('/duckiebot/wheels_driver_node/car_cmd',Twist2DStamped,self.motor_callback)
         self.pub_tf = rospy.Publisher("/tf", TFMessage, queue_size=1, latch=True)
         self.pub_rviz = rospy.Publisher("/sign_highlights", Marker, queue_size=1, latch=True)
 
@@ -41,16 +52,9 @@ class LocalizationNode(object):
 
         # Use a timer to make the duckiebot disappear
         self.lifetimer = rospy.Time.now()
-        self.publish_duckie_marker()
+        #self.publish_duckie_marker()
 
-        self.time0
-        self.time1
-        self.timeDif
-        self.motorAnterior
-        self.counter = 0
-        self.omega
-        self.x
-        self.y
+        
 
         rospy.loginfo("[%s] has started", self.node_name)
 
@@ -85,8 +89,10 @@ class LocalizationNode(object):
             T = TransformStamped()
             T.transform = Tr_w
             T.header.frame_id = self.world_frame
+            self.last_world_frame = self.world_frame
             T.header.stamp = rospy.Time.now()
             T.child_frame_id = self.duckiebot_frame
+            self.last_duckiebot_frame = self.duckiebot_frame
             self.x = Tr_w.translation.x
             self.y = Tr_w.translation.y
             self.omega = rotz
@@ -151,6 +157,7 @@ class LocalizationNode(object):
         return value
     
     def motor_callback(self,motor):
+        
         if self.counter == 0:
             self.time0 = time.time()
             self.counter = 1
@@ -163,6 +170,7 @@ class LocalizationNode(object):
             deltaomega = self.motorAnterior.omega*self.timeDif
             self.omega = self.omega+deltaomega
             self.x = self.x + deltadist*math.cos(self.omega)
+            self.y = self.y + deltadist*math.sin(self.omega)
             
             transformAprox = Transform()
             transformAprox.translation.x = self.x
@@ -171,11 +179,11 @@ class LocalizationNode(object):
             (transformAprox.rotation.x,transformAprox.rotation.y,transformAprox.rotation.z,transformAprox.rotation.w) = tr.quaternion_from_euler(0,0,self.omega)
             T2 = TransformStamped()
             T2.transform = transformAprox
-            T2.header.frame_id = self.world_frame
+            T2.header.frame_id = self.last_world_frame
             T2.header.stamp = rospy.Time.now()
-            T2.child_frame_id = self.duckiebot_frame
+            T2.child_frame_id = self.last_duckiebot_frame
             
-            
+            rospy.loginfo(TFMessage([T2]))
             self.pub_tf.publish(TFMessage([T2]))
             
 
