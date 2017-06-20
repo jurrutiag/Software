@@ -183,7 +183,7 @@ class LocalizationNode(object):
             T2.header.stamp = rospy.Time.now()
             T2.child_frame_id = self.last_duckiebot_frame
             
-            rospy.loginfo(TFMessage([T2]))
+            #rospy.loginfo(TFMessage([T2]))
             self.pub_tf.publish(TFMessage([T2]))
             
 
