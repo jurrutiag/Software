@@ -100,6 +100,7 @@ class LocalizationNode(object):
             self.omega = rotz
             self.pub_tf.publish(TFMessage([T]))
             self.lifetimer = rospy.Time.now()
+            
 
     def publish_duckie_marker(self):
         # Publish a duckiebot transform far away unless the timer was reset
@@ -189,9 +190,6 @@ class LocalizationNode(object):
             
             rospy.loginfo(TFMessage([T2]))
             self.pub_tf.publish(TFMessage([T2]))
-            
-
-        
 
 
 if __name__ == '__main__':
