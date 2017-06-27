@@ -26,8 +26,8 @@ class joy_control():
         if abs(self.msgMotor.omega) <= 6:
             self.msgMotor.omega = 0
         print(self.msgMotor)
-        rospy.loginfo(self.msgMotor.v)
-        rospy.loginfo(self.msgMotor.omega)
+        #rospy.loginfo(self.msgMotor.v)
+        #rospy.loginfo(self.msgMotor.omega)
         #self.possible_pub.publish(self.msgMotor)
         self.normal_pub.publish(self.msgMotor)
     #eliminar luego de tener el robot    

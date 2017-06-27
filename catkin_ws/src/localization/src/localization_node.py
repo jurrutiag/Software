@@ -34,8 +34,8 @@ class LocalizationNode(object):
         self.omega = 0
         self.x = 0
         self.y = 0
-        self.komega = 5.1913/13
-        self.kvel = 0.4366/2
+        self.komega = 6/13
+        self.kvel = 0.8 /2
         self.last_world_frame = "world"
         self.last_duckiebot_frame = "duckiebot"
 
@@ -175,7 +175,9 @@ class LocalizationNode(object):
             self.omega = self.omega+deltaomega
             self.x = self.x + deltadist*math.cos(self.omega)
             self.y = self.y + deltadist*math.sin(self.omega)
-            
+            rospy.loginfo(self.omega)
+            self.omega = self.reiniciarAngulo(self.omega)
+            rospy.loginfo(self.omega)
             
             transformAprox = Transform()
             transformAprox.translation.x = self.x
@@ -188,8 +190,15 @@ class LocalizationNode(object):
             T2.header.stamp = rospy.Time.now()
             T2.child_frame_id = self.last_duckiebot_frame
             
-            rospy.loginfo(TFMessage([T2]))
+            #rospy.loginfo(TFMessage([T2]))
             self.pub_tf.publish(TFMessage([T2]))
+            
+    def reiniciarAngulo(self,omega):
+        
+        if omega>2*math.pi:
+            return omega-2*math.pi
+        else:
+            return omega
 
 
 if __name__ == '__main__':
