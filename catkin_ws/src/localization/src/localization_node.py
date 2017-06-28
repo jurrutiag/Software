@@ -176,8 +176,6 @@ class LocalizationNode(object):
             self.x = self.x + deltadist*math.cos(self.omega)
             self.y = self.y + deltadist*math.sin(self.omega)
             rospy.loginfo(self.omega)
-            self.omega = self.reiniciarAngulo(self.omega)
-            rospy.loginfo(self.omega)
             
             transformAprox = Transform()
             transformAprox.translation.x = self.x
@@ -193,12 +191,6 @@ class LocalizationNode(object):
             #rospy.loginfo(TFMessage([T2]))
             self.pub_tf.publish(TFMessage([T2]))
             
-    def reiniciarAngulo(self,omega):
-        
-        if omega>2*math.pi:
-            return omega-2*math.pi
-        else:
-            return omega
 
 
 if __name__ == '__main__':
