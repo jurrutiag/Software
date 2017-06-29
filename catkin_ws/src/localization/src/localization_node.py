@@ -38,7 +38,7 @@ class LocalizationNode(object):
         #self.transActual = Transform()
         
         self.komega = 5.19/13
-        self.kvel = 0.62/2
+        self.kvel = 0.62
         self.last_world_frame = "world"
         self.last_duckiebot_frame = "duckiebot"
 
