@@ -21,9 +21,9 @@ class joy_control():
         lr = msg.axes[0]
         bwd = msg.axes[2] #presionando el boton de presion izquierdo
         fwd = msg.axes[5] #presionando el boton de presion derecho
-        self.msgMotor.v = abs(fwd-1) + (bwd-1)
+        self.msgMotor.v = (abs(fwd-1) + (bwd-1))/2
         self.msgMotor.omega = lr*13
-        if abs(self.msgMotor.omega) <= 6:
+        if abs(self.msgMotor.omega) <= 7.5:
             self.msgMotor.omega = 0
         print(self.msgMotor)
         #rospy.loginfo(self.msgMotor.v)

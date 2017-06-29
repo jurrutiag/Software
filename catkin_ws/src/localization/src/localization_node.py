@@ -34,8 +34,11 @@ class LocalizationNode(object):
         self.omega = 0
         self.x = 0
         self.y = 0
-        self.komega = 6/13
-        self.kvel = 0.8 /2
+        
+        #self.transActual = Transform()
+        
+        self.komega = 5.19/13
+        self.kvel = 0.62/2
         self.last_world_frame = "world"
         self.last_duckiebot_frame = "duckiebot"
 
@@ -90,6 +93,7 @@ class LocalizationNode(object):
             (rot.x, rot.y, rot.z, rot.w) = tr.quaternion_from_euler(0, 0, rotz)
             T = TransformStamped()
             T.transform = Tr_w
+            #self.transActual = Tr_w
             T.header.frame_id = self.world_frame
             self.last_world_frame = self.world_frame
             T.header.stamp = rospy.Time.now()
@@ -162,22 +166,29 @@ class LocalizationNode(object):
     def motor_callback(self,motor):
         
         if self.counter == 0:
-            self.time0 = time.time()
+            self.time0 = rospy.get_time()
             self.counter = 1
             self.motorAnterior = motor
         elif self.counter == 1:
-            self.time1 = time.time()
+            self.time1 = rospy.get_time()
             self.timeDif = self.time1-self.time0
             self.counter = 0
             deltadist = self.motorAnterior.v*self.kvel*self.timeDif
             deltaomega = self.motorAnterior.omega*self.komega*self.timeDif
             
             self.omega = self.omega+deltaomega
+            self.omega = self.reiniciarAngulo(self.omega)
             self.x = self.x + deltadist*math.cos(self.omega)
             self.y = self.y + deltadist*math.sin(self.omega)
             rospy.loginfo(self.omega)
+            rospy.loginfo(self.timeDif)
+            #MatrixInicial = self.transform_to_matrix(self.transActual)
+            #DeltaMatrix = np.matrix([[math.cos(self.omega),-math.sin(self.omega),0,deltadist],[math.sin(self.omega),math.cos(self.omega),0,0],[0,0,1,0],[0,0,0,1]])
+            #MatrixFinal = np.dot(MatrixInicial,DeltaMatrix)
+            #TransformFinal = self.matrix_to_transform(MatrixFinal)
             
             transformAprox = Transform()
+            #transformAprox = MatrixFinal
             transformAprox.translation.x = self.x
             transformAprox.translation.y = self.y
             transformAprox.translation.z = 0
@@ -188,9 +199,17 @@ class LocalizationNode(object):
             T2.header.stamp = rospy.Time.now()
             T2.child_frame_id = self.last_duckiebot_frame
             
-            #rospy.loginfo(TFMessage([T2]))
+            rospy.loginfo(TFMessage([T2]))
             self.pub_tf.publish(TFMessage([T2]))
             
+
+    def reiniciarAngulo(self,angulo):
+        if abs(angulo)>=2*math.pi:
+            if angulo>=0:
+                angulo-=2*math.pi
+            elif angulo < 0:
+                angulo+=2*math.pi
+        return angulo
 
 
 if __name__ == '__main__':
