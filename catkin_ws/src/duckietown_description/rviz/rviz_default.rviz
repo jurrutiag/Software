@@ -305,8 +305,6 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: false
-        duckiebot:
-          Value: true
         tag_200:
           Value: true
         tag_201:
@@ -406,8 +404,6 @@ Visualization Manager:
       Show Names: false
       Tree:
         world:
-          duckiebot:
-            {}
           tile_0_0:
             tag_200:
               {}
@@ -509,7 +505,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 6.68670988
+      Distance: 8.10607243
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.0599999987
         Stereo Focal Distance: 1

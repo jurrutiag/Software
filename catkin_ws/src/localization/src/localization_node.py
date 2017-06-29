@@ -35,10 +35,12 @@ class LocalizationNode(object):
         self.x = 0
         self.y = 0
         
+        self.motorList = [[],[]]
+        
         #self.transActual = Transform()
         
-        self.komega = 5.19/13
-        self.kvel = 0.62
+        self.komega = 5.12/13
+        self.kvel = 0.42
         self.last_world_frame = "world"
         self.last_duckiebot_frame = "duckiebot"
 
@@ -164,43 +166,42 @@ class LocalizationNode(object):
         return value
     
     def motor_callback(self,motor):
-        
-        if self.counter == 0:
-            self.time0 = rospy.get_time()
-            self.counter = 1
-            self.motorAnterior = motor
-        elif self.counter == 1:
-            self.time1 = rospy.get_time()
-            self.timeDif = self.time1-self.time0
-            self.counter = 0
-            deltadist = self.motorAnterior.v*self.kvel*self.timeDif
-            deltaomega = self.motorAnterior.omega*self.komega*self.timeDif
+    
+        self.motorList[0] = ([motor.v,motor.omega,rospy.get_time()]) #Se guarda el primer valor del motor en la posicion 0 de la lista
+        if self.counter==0:
+            self.motorList[1] = self.motorList[0] #El primer valor del motor se pasa a la segunda posicion de la lista
+            self.counter = 1 #counter con el cual no se ejecutara nuevamente este "if"
+        elif len(self.motorList)>1:
+            self.time0 = self.motorList[1][2] #Se guardan los tiempos asociados a la medicion de cada motor
+            self.time1 = self.motorList[0][2]
+            self.timeDif = self.time1-self.time0 #Se calcula la diferencia de tiempos
             
-            self.omega = self.omega+deltaomega
+            deltadist = self.motorList[1][0]*self.kvel*self.timeDif  #Se calcula la distancia avanzada y el angulo girado
+            deltaomega = self.motorList[1][1]*self.komega*self.timeDif
+            
+            
+            self.omega = self.omega+deltaomega    #Se actualizan los datos de la posicion del robot
             self.omega = self.reiniciarAngulo(self.omega)
             self.x = self.x + deltadist*math.cos(self.omega)
             self.y = self.y + deltadist*math.sin(self.omega)
-            rospy.loginfo(self.omega)
-            rospy.loginfo(self.timeDif)
-            #MatrixInicial = self.transform_to_matrix(self.transActual)
-            #DeltaMatrix = np.matrix([[math.cos(self.omega),-math.sin(self.omega),0,deltadist],[math.sin(self.omega),math.cos(self.omega),0,0],[0,0,1,0],[0,0,0,1]])
-            #MatrixFinal = np.dot(MatrixInicial,DeltaMatrix)
-            #TransformFinal = self.matrix_to_transform(MatrixFinal)
+            rospy.loginfo("angulo: %f", self.omega)
+            rospy.loginfo("timeDif: %f", self.timeDif)
             
-            transformAprox = Transform()
-            #transformAprox = MatrixFinal
+            
+            transformAprox = Transform()    #Se crea el objeto Transform con los datos de la posicion nueva
             transformAprox.translation.x = self.x
             transformAprox.translation.y = self.y
             transformAprox.translation.z = 0
-            (transformAprox.rotation.x,transformAprox.rotation.y,transformAprox.rotation.z,transformAprox.rotation.w) = tr.quaternion_from_euler(0,0,self.omega)
-            T2 = TransformStamped()
+            (transformAprox.rotation.x,transformAprox.rotation.y,transformAprox.rotation.z,transformAprox.rotation.w) = tr.quaternion_from_euler(0,0,self.omega)  #Se transforma el giro en un quaternino
+            T2 = TransformStamped()   #Se agregan tags al Transform
             T2.transform = transformAprox
             T2.header.frame_id = self.last_world_frame
             T2.header.stamp = rospy.Time.now()
             T2.child_frame_id = self.last_duckiebot_frame
             
             rospy.loginfo(TFMessage([T2]))
-            self.pub_tf.publish(TFMessage([T2]))
+            self.pub_tf.publish(TFMessage([T2]))   #Se publica el TransformStamped en /tf
+            self.motorList[1] = self.motorList[0]   #Se mueve el valor 0 de la lista a la posicion 1 para hacer espacio para el siguiente.
             
 
     def reiniciarAngulo(self,angulo):
@@ -216,3 +217,14 @@ if __name__ == '__main__':
     rospy.init_node('localization_node', anonymous=False)
     localization_node = LocalizationNode()
     rospy.spin()
+    
+    
+    
+    
+    
+#matrices
+#MatrixInicial = self.transform_to_matrix(self.transActual)
+#DeltaMatrix = np.matrix([[math.cos(deltaomega),-math.sin(deltaomega),0,deltadist],[math.sin(deltaomega),math.cos(deltaomega),0,0],[0,0,1,0],[0,0,0,1]])
+#MatrixFinal = np.dot(MatrixInicial,DeltaMatrix)
+#TransformFinal = self.matrix_to_transform(MatrixFinal)
+#self.transActual = TransformFinal
